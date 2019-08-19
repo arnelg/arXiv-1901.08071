@@ -64,11 +64,12 @@ class TeleCorrector():
         # construct channel
         channel = qt.Qobj()
         Paulis = np.array(
-                [[self.code_out.identity,
-                  self.code_out.logical_Z_allspace],
-                 [self.code_out.logical_X_allspace,
-                  self.code_out.logical_X_allspace
-                  * self.code_out.logical_Z_allspace]])
+            [[self.code_out.identity,
+              self.code_out.logical_Z_allspace],
+             [self.code_out.logical_X_allspace,
+              self.code_out.logical_X_allspace
+              * self.code_out.logical_Z_allspace]],
+            dtype=type(self.code_out.identity))
         for a1, a2 in np.ndindex(2, 2):
             for b1, b2 in np.ndindex(2, 2):
                 for x1 in range(ndata_meas):
