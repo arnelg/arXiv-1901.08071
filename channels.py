@@ -228,19 +228,6 @@ class POVM():
                           tol=1e-12)
 
 
-class PrettyGoodMeasurement(POVM):
-    def __init__(self, code, noise):
-
-        sigma = noise(code.projector)
-        x = matrixf(sigma, lambda x: x**(-1/2), safe=True)
-        povm_list = [
-                     x*noise.channel_matrix(code.plus)*x,
-                     x*noise.channel_matrix(code.minus)*x,
-                    ]
-        povm_list.append(code.identity - sum(povm_list))
-        POVM.__init__(self, povm_list)
-
-
 """
 Misc. functions
 """
