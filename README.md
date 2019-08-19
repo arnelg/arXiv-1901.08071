@@ -4,7 +4,9 @@ example.ipynb is a Jupyter notebook with a minimal example to produce the type o
 
 The code requires qutip (https://github.com/qutip) to run. To be able to find optimal recoveries using SDP, the code moreover requires MATLAB to be installed and the python `matlab` module (https://www.mathworks.com/help/matlab/matlab_external/install-the-matlab-engine-for-python.html).
 
-The code has been tested with the following software
+The code is not maintaned and no effort will be made to make it compatible with software versions other than those listed below.
+
+The code has been tested with the following software:
 
 | Software   | Version        |
 |------------|----------------|
