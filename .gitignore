@@ -1,0 +1,11 @@
+## Temporary files ##
+*~
+*.tmp
+*.pyc
+
+## IPython Checkpoints ##
+*.ipynb_checkpoints
+
+
+## Sublime crap ##
+*.sublime-workspace
