@@ -24,30 +24,6 @@ class Channel():
         self._dim = None
         self._kraus_dual = None
         self._dual = None
-        """
-        if kraus is not None:
-            self._kraus = kraus
-            if channel_matrix is None:
-                self._channel_matrix = qt.kraus_to_super(kraus)
-            if choi is None:
-                self._choi = qt.kraus_to_choi(kraus)
-        elif channel_matrix is not None:
-            self._channel_matrix = channel_matrix
-            if choi is None:
-                self._choi = qt.super_to_choi(channel_matrix)
-            self._kraus = qt.choi_to_kraus(self._choi)
-        elif choi is not None:
-            self._choi = choi
-            self._channel_matrix = qt.choi_to_super(choi)
-            self._kraus = qt.choi_to_kraus(choi)
-        else:
-            self._kraus = None
-            self._choi = None
-            self._channel_matrix = None
-        if self._kraus is not None:
-            self._dim = self._kraus[0].dims
-            self._kraus_dual = [k.dag() for k in self._kraus]
-        """
 
     def __call__(self, other):
         return self.channel_matrix(other)
@@ -66,7 +42,7 @@ class Channel():
             self._kraus = qt.choi_to_kraus(self._choi)
         elif self._channel_matrix is not None:
             self._choi = qt.super_to_choi(self._channel_matrix)
-            self._kraus = qt.choi_to_kraus(self._choi)            
+            self._kraus = qt.choi_to_kraus(self._choi)
         return self._kraus
 
     @property
@@ -208,59 +184,6 @@ class DephasingChannel(Channel):
             k_list.append(qt.Qobj(op))
         Channel.__init__(self, k_list)
         self._kt = kt
-
-
-class LossAndDephasing(Channel):
-
-    def __init__(self, gamma, gamma_n, dim, lmax1, lmax2):
-        self._loss = LossChannel(gamma, dim, lmax1)
-        self._dephasing = DephasingChannel(gamma_n, dim, lmax2)
-        Channel.__init__(self, channel_matrix=self._dephasing.channel_matrix
-                         * self._loss.channel_matrix)
-
-
-class RandomRotation(Channel):
-
-    def __init__(self, dim, theta=0.01*2*np.pi):
-        n = qt.num(dim)
-        k0 = np.sqrt(0.5)*(-1j*theta*n).expm()
-        k1 = np.sqrt(0.5)*(1j*theta*n).expm()
-        Channel.__init__(self, [k0, k1])
-
-
-class LindbladEvolution(Channel):
-
-    def __init__(self, L):
-        dim = L.dims[0][0][0]
-        ide = qt.sprepost(qt.qeye(dim), qt.qeye(dim))
-        noise_matrix = qt.mesolve(L, ide, [0., 1.]).states[-1]
-        Channel.__init__(self, channel_matrix=noise_matrix)
-
-
-class ShiftUpChannel(Channel):
-
-    def __init__(self, l, dim):
-        k1 = qt.Qobj()
-        for n in range(0, dim-l):
-            k1 += qt.basis(dim, n+l)*qt.basis(dim, n).dag()
-        k0 = 0.*k1
-        for n in range(dim-l, dim):
-            ket = qt.basis(dim, n)
-            k0 += ket*ket.dag()
-        Channel.__init__(self, [k0, k1])
-
-
-class ShiftDownChannel(Channel):
-
-    def __init__(self, l, dim):
-        k1 = qt.Qobj()
-        for n in range(l, dim):
-            k1 += qt.basis(dim, n-l)*qt.basis(dim, n).dag()
-        k0 = 0.*k1
-        for n in range(0, l):
-            ket = qt.basis(dim, n)
-            k0 += ket*ket.dag()
-        Channel.__init__(self, [k0, k1])
 
 
 class POVM():

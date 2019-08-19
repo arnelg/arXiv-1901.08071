@@ -5,37 +5,6 @@ import qutip as qt
 
 import channels
 import codes
-import recoveries
-
-
-class LossChannel(channels.Channel):
-    """
-    Sometimes errors arise if lmax is too big, probably due to overflow when
-    taking the factorial??
-
-    gamma = kappa tau
-    """
-
-    def __init__(self, gamma, dim, lmax):
-        kt = gamma
-        a = qt.destroy(dim)
-        k_list = []
-        x = np.exp(-kt)
-        n_fac = channels.n_pow_op(np.sqrt(x), 1, dim)
-        for l in range(lmax):
-            c = channels.factorial_quotient(1-x, l)
-            k_list.append(np.sqrt(c)*n_fac*a**l)
-        self._kt = kt
-        self._kraus = k_list
-        channels.Channel.__init__(self, k_list)
-
-    @property
-    def kraus(self):
-        return self._kraus
-
-    def propagate(self, ancilla_dim, N, M):
-        n = qt.num(ancilla_dim)
-        return [(-1j*np.pi*k/(N*M)*n).expm() for k in range(len(self.kraus))]
 
 
 class TeleCorrector():

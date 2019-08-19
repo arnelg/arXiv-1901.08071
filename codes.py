@@ -11,37 +11,6 @@ import qutip as qt
 import channels
 
 
-def factorial(x):
-    if x >= 0.0:
-        return np.math.factorial(x)
-    else:
-        return 0.0
-
-
-def phasestate(s, r, phi0=0., fockdim=None):
-    if fockdim is None:
-        fockdim = s
-    phim = phi0 + (2.0 * np.pi * r) / s
-    n = np.arange(s)
-    data = 1.0 / np.sqrt(s) * np.exp(1.0j * n * phim)
-    data = np.hstack((data, np.zeros(fockdim-s)))
-    return qt.Qobj(data)
-
-
-def choi_to_kraus(q_oper, tol=1e-8):
-    """
-    Takes a Choi matrix and returns a list of Kraus operators.
-    """
-    vals, vecs = eig(q_oper.data.todense())
-    vecs = [array(_) for _ in zip(*vecs)]
-    shape = [np.prod(q_oper.dims[0][i]) for i in range(2)][::-1]
-    kraus = [qt.Qobj(inpt=np.sqrt(val)*qt.vec2mat(vec, shape=shape),
-             dims=q_oper.dims[0][::-1])
-             for val, vec in zip(vals, vecs)]
-    idx = np.where(vals > tol)[0]
-    return np.array(kraus)[idx]
-
-
 class CodeException(Exception):
     pass
 
@@ -54,22 +23,6 @@ class RotationalCode(object):
     def __init__(self, zero=None, one=None, plus=None, minus=None, N=None,
                  encoder=None, purity_threshold=1e-10):
         if encoder is not None:
-            """
-            def extract_ket(rho):
-                vals, vecs = rho.eigenstates()
-                idx = np.where(vals > purity_threshold)[0]
-                if len(idx) > 1:
-                    # raise CodeException("code not pure", vals[idx])
-                    warnings.warn("code not pure " + str(vals[idx]))
-                idx_max = np.argmax(vals)
-                return(vecs[idx_max])
-            zero = qt.ket2dm(qt.basis(2, 0))
-            zero = extract_ket(qt.vector_to_operator(encoder
-                               * qt.operator_to_vector(zero)))
-            one = qt.ket2dm(qt.basis(2, 1))
-            one = extract_ket(qt.vector_to_operator(encoder
-                              * qt.operator_to_vector(one)))
-            """
             zero = encoder*qt.basis(2, 0)
             one = encoder*qt.basis(2, 1)
         self._encoder = encoder
@@ -139,24 +92,16 @@ class RotationalCode(object):
 
     @property
     def logical_Z(self):
-        # Q = self.identity-self.projector
-        # return self.zero*self.zero.dag() - self.one*self.one.dag() + Q
         S = self.encoder(kraus=True)
         return S*qt.sigmaz()*S.dag()
 
     @property
     def logical_X(self):
-        # Q = self.identity-self.projector
-        # return self.zero*self.one.dag() + self.one*self.zero.dag() + Q
         S = self.encoder(kraus=True)
         return S*qt.sigmax()*S.dag()
 
     @property
     def logical_H(self):
-        # Q = self.identity-self.projector
-        # return (self.zero*self.zero.dag() + self.zero*self.one.dag()
-        #         + self.one*self.zero.dag() - self.one*self.one.dag()
-        #         )/np.sqrt(2) + Q
         S = self.encoder(kraus=True)
         return S*qt.hadamard_transform()*S.dag()
 
@@ -374,52 +319,3 @@ class GKPs(RotationalCode):
         one = one/one.norm()
         RotationalCode.__init__(self, zero=zero, one=one)
         self._name = 'gkp'
-
-
-class MixedCode(RotationalCode):
-    """
-    A general code given by an encoding superoperator.
-    Codewords can be basically anything, mixed, non-orthogonal, etc.
-    """
-
-    def __init__(self, encoder, N=None):
-        self.encoder = encoder
-        self.zero = qt.vector_to_operator(
-                        encoder*qt.operator_to_vector(qt.basis(2, 0)))
-        self.one = qt.vector_to_operator(
-                        encoder*qt.operator_to_vector(qt.basis(2, 1)))
-        self.plus = qt.vector_to_operator(encoder*qt.operator_to_vector(
-                        (qt.basis(2, 0)+qt.basis(2, 1))/np.sqrt(2)))
-        self.minus = qt.vector_to_operator(encoder*qt.operator_to_vector(
-                        (qt.basis(2, 0)-qt.basis(2, 1))/np.sqrt(2)))
-        RotationalCode.__init__(self, zero=zero, one=one, plus=plus,
-                                minus=minus, N=N)
-
-    @property
-    def projector(self):
-        # Projector onto code space P_code
-        return self.zero + self.one
-
-    @property
-    def logical_Z(self):
-        # Q = self.identity-self.projector
-        return self.zero - self.one
-
-    @property
-    def logical_X(self):
-        # Q = self.identity-self.projector
-        return self.plus - self.minus
-
-    @property
-    def logical_H(self):
-        # Q = self.identity-self.projector
-        return (self.logical_Z+self.logical_X)/np.sqrt(2)
-
-
-class SubsystemCode(RotationalCode):
-
-    def __init__(self, code, ancilla_state):
-        zero = qt.tensor(code.zero, ancilla_state)
-        one = qt.tensor(code.one, ancilla_state)
-        self._ancilla_state = ancilla_state
-        RotationalCode.__init__(self, zero=zero, one=one, N=code.N)
