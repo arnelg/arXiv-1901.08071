@@ -14,3 +14,13 @@ The code has been tested with the following software
 | matplotlib | 2.2.2          |
 | Python     | 3.6.5          |
 | OS         | posix [darwin] |
+
+
+| Software   | Version        |
+|------------|----------------|
+| QuTiP      | 4.4.0          |
+| Numpy      | 1.16.3         |
+| SciPy      | 1.3.0          |
+| matplotlib | 3.1.0          |
+| Python     | 3.7.3          |
+| OS         | posix [darwin] |
