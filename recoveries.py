@@ -86,6 +86,20 @@ class PhaseMeasurement(channels.POVM):
 
 
 class PrettyGoodMeasurement(channels.POVM):
+    def __init__(self, code, noise):
+
+        sigma = noise(code.projector)
+        x = matrixf(sigma, lambda x: x**(-1/2), safe=True)
+        povm_list = [
+                     x*noise.channel_matrix(code.plus)*x,
+                     x*noise.channel_matrix(code.minus)*x,
+                    ]
+        povm_list.append(code.identity - sum(povm_list))
+        channels.POVM.__init__(self, povm_list)
+
+
+"""
+class PrettyGoodMeasurement(channels.POVM):
     def __init__(self, code, noise, ancilla=None):
         if ancilla is None:
             ancilla = code
@@ -104,6 +118,7 @@ class PrettyGoodMeasurement(channels.POVM):
         povm_list.append(qt.tensor(code.identity, ancilla.identity)
                          - np.sum(povm_list))
         channels.POVM.__init__(self, povm_list)
+"""
 
 
 class CafarovanLoockMeasurement(channels.POVM):
