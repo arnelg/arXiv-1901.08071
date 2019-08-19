@@ -8,23 +8,13 @@ This code is made public to improve reproducibility of numerical results in arXi
 
 The code has been tested with the following software:
 
-| Software   | Version         |
-|------------|-----------------|
-| QuTiP      | 4.3.0           |
-| Numpy      | 1.14.3          |
-| SciPy      | 1.1.0           |
-| matplotlib | 2.2.2           |
-| Python     | 3.6.5           |
-| MATLAB     | R2017b          |
-| CVX        | 2.1, Build 1123 |
-| OS         | posix [darwin]  |
-
-
-| Software   | Version         |
-|------------|-----------------|
-| QuTiP      | 4.4.0           |
-| Numpy      | 1.16.3          |
-| SciPy      | 1.3.0           |
-| matplotlib | 3.1.0           |
-| Python     | 3.7.3           |
-| OS         | posix [darwin]  |
+| Software   | Version         | Version        |
+|------------|-----------------|----------------|
+| QuTiP      | 4.3.0           | 4.4.0          |
+| Numpy      | 1.14.3          | 1.16.3         |
+| SciPy      | 1.1.0           | 1.3.0          |
+| matplotlib | 2.2.2           | 3.1.0          |
+| Python     | 3.6.5           | 3.7.3          |
+| MATLAB     | R2017b          |                |
+| CVX        | 2.1, Build 1123 |                |
+| OS         | posix [darwin]  | posix [darwin] |
