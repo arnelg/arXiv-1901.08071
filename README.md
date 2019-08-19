@@ -18,3 +18,5 @@ The code has been tested with the following software:
 | MATLAB     | R2017b          |                |
 | CVX        | 2.1, Build 1123 |                |
 | OS         | posix [darwin]  | posix [darwin] |
+
+Note: Matlab 2017, 2018, and 2019a do not support Python versions >3.6 so the SDP solver wont work for the second configuration.
